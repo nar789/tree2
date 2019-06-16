@@ -1,0 +1,146 @@
+      <% include header.html %>
+
+        
+          <div class="row mt-3">
+            <div class="col-12 mb-3">
+              <h1>실험추가</h1>
+              <h4 style="color:#898989;">실험정보를 추가해주세요.</h4>
+              <button class="btn btn-danger" style="float:right;" onclick="cleardata();">데이터초기화</button>  
+              <button class="btn btn-info" style="float:right;" onclick="add_attr()">속성추가</button>  
+              <button class="btn btn-success" style="float:right;" onclick="add_exp()">실험추가</button>  
+            </div>
+          </div>
+          <div class="row justify-content-center d-flex">
+            <div class="col-8 ">
+              <form action="#">
+                      <label>실험이름</label>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id=exp_name>
+                      </div>
+                      <label>실험식물</label>
+                      <div class="form-group">
+                        <select class="form-control" id=plant>
+                            <option value="1" selected="selected">토마토</option>
+                            <option value="2">감자</option>
+                            <option value="3">딸기</option>
+                        </select>
+                      </div>
+
+                      <label>테이블 이름(영문으로 기입해주세요.)</label>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id=table_name>
+                      </div>
+                      <div id=attrdiv>
+                        <div id=attr_group1>
+                          <label>속성명1(영문으로 기입해주세요.)</label> <button class="btn btn-info btn-sm" onclick="attr_del(1)">속성삭제</button>
+                          <div class="form-group">
+                            <input type="text" class="form-control" id="attr_str1">
+                          </div>
+                        </div>
+                      </div>
+
+              </form>
+              <button class="btn btn-block btn-success mt-5" onclick="add_exp()">실험추가</button>
+            </div>
+
+          </div>
+
+
+          <script type="text/javascript">
+
+
+
+            var attr=[];
+            last_id=1;
+            attr.push({
+              id:1,
+              str:'',
+            });
+
+            function cleardata(){
+              location.replace('/experiment/insert');
+            }
+
+            function add_attr(){
+
+                last_id++;
+                attr.push({
+                  id:last_id,
+                  str:'',
+                });
+                var script=`
+                    <div id=attr_group${last_id}>
+                      <label>속성명${last_id}(영문으로 기입해주세요.)</label> <button class="btn btn-info btn-sm" onclick="attr_del(${last_id})">속성삭제</button>
+                      <div class="form-group">
+                        <input type="text" class="form-control " id="attr_str${last_id}">
+                      </div>
+                    </div>`;
+                $('#attrdiv').append(script);
+            }
+
+            function attr_del(id)
+            {
+              for(var i=0;i<attr.length;i++)
+              {
+                if(attr[i].id==id)
+                {
+                  attr[i].id=-1;
+                }
+              }
+              $('#attr_group'+id).remove();
+            }
+
+
+            function get_attr()
+            {
+              var j=[];
+              for(var i=0;i<attr.length;i++)
+              {
+                if(attr[i].id>=0)
+                  j.push($('#attr_str'+attr[i].id).val()+'');
+              }
+
+              return j;
+            }
+
+
+              
+            function add_exp(){
+              
+              var exp_name=$('#exp_name').val();
+              var table_name=$('#table_name').val();
+              if(exp_name=='' || table_name=='' ||exp_name===undefined || table_name===undefined){
+                jbalert('실험 추가 실패','데이터를 기입해주세요.');
+                return;
+              }
+              var attr_val=get_attr();
+              var attr_json={};
+              attr_json.table_name=table_name;
+              attr_json.attr_str=attr_val;
+              attr_json=JSON.stringify(attr_json);
+              attr_json=encodeURIComponent(attr_json);
+              var plant=$('#plant').val();
+
+              $.post('/db/experiment/insert',{
+                exp_name:exp_name,
+                exp_attr:attr_json,
+                plant:plant,
+              },(e,d)=>{
+                if(d==='success'){
+                  jbalert('실험 추가 성공','실험추가에 성공했습니다.');
+                  setTimeout(()=>{
+                    location.replace('/');
+                  },1000);
+                  
+                }else{
+                  jbalert('실험 추가 실패','[!] 실험추가에 실패했습니다.');
+                }
+              });
+
+            }
+          </script>
+            
+
+          
+
+      <% include footer.html %>

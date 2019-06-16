@@ -1,0 +1,109 @@
+      <% include header.html %>
+
+        
+          <div class="row mt-3">
+            <div class="col-12 mb-3" >
+              <a href='javascript:history.back()'><h1><<%=exp_name%>> 데이터 수정</h1></a>
+              <h4 style="color:#898989;">데이터정보를 수정합니다.</h4>
+              <button class="btn btn-danger" style="float:right;" onclick="del_data('<%=j.table_name%>',<%=item_id%>)">데이터삭제</button>  
+              <button class="btn btn-success" style="float:right;" onclick="update_data()">데이터수정</button>  
+            </div>
+          </div>
+          <div class="row justify-content-center d-flex">
+            <div class="col-8 ">
+              <form action="#">
+
+                    <% for(var i=0;i<j.attr_str.length;i++){ %>
+                      <label>속성값 : <%=j.attr_str[i]%></label>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id=attr<%=i%> value="<%=rows[0][''+j.attr_str[i]]%>">
+                      </div>
+                    <% } %>
+              </form>
+              <button class="btn btn-block btn-success mt-5" onclick="update_data()">데이터수정</button>
+            </div>
+
+          </div>
+
+
+          <script type="text/javascript">
+            var len=<%=j.attr_str.length%>;
+
+            var attrs='<%=j.attr_str%>';
+
+
+
+            function update_data(){
+              attrs=attrs.split(',');
+              var vals=``;
+              for(var i=0;i<len;i++){
+                vals=vals+attrs[i]+`='`+$('#attr'+i).val()+`'`;
+                if(i!=len-1)
+                  vals=vals+',';
+              }
+              
+
+              var tb='<%=j.table_name%>';
+              var itemid=<%=item_id%>;
+
+              $.post('/db/experiment/item/update',{
+                tb:tb,
+                id:itemid,
+                vals:vals,
+              },(d,e)=>{
+                if(d==='success'){
+                  jbalert('데이터 수정 성공','데이터 수정이 완료되었습니다.');
+                  setTimeout(()=>{  
+                    location.href=`/experiment/<%=id%>`;
+                  },1000);
+                  
+                }else{
+                  jbalert('데이터 수정 실패','데이터 수정이 실패했습니다.');
+                }
+              });
+
+              //api request
+
+
+
+            }
+
+
+
+            function del_data(tb,itemid){
+
+              confirm('데이터삭제','데이터를 삭제하시겠습니까?',()=>{
+
+                $.post('/db/experiment/item/delete',{
+                    tb:tb,
+                    id:itemid,
+                  },(d,e)=>{
+                    if(d==='success'){
+                      jbalert('데이터 삭제 성공','데이터 삭제가 완료되었습니다.');
+                      
+                      setTimeout(()=>{  
+                        location.href=`/experiment/<%=id%>`;
+                      },1000);
+                      
+                    }else{
+                      jbalert('데이터 삭제 실패','데이터 삭제가 실패했습니다.');
+                    }
+                  });
+
+
+              });
+              
+
+
+
+            }
+
+
+            
+
+          </script>
+            
+
+          
+
+      <% include footer.html %>

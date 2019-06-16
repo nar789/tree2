@@ -1,0 +1,76 @@
+      <% include header.html %>
+
+        
+          <div class="row mt-3">
+            <div class="col-12 mb-3">
+              <a href='javascript:history.back()'><h1><<%=exp_name%>> 데이터 입력</h1></a>
+              <h4 style="color:#898989;">데이터정보를 입력해주세요.</h4>
+              <button class="btn btn-danger" style="float:right;" onclick="javascript:location.reload();">데이터초기화</button>  
+              <button class="btn btn-success" style="float:right;" onclick="add_exp()">데이터입력</button>  
+            </div>
+          </div>
+          <div class="row justify-content-center d-flex">
+            <div class="col-8 ">
+              <form action="#">
+
+                    <% for(var i=0;i<j.attr_str.length;i++){ %>
+                      <label>속성값 : <%=j.attr_str[i]%></label>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id=attr<%=i%> placeholder="값을 입력해주세요.">
+                      </div>
+                    <% } %>
+              </form>
+              <button class="btn btn-block btn-success mt-5" onclick="inputdata()">데이터입력</button>
+            </div>
+
+          </div>
+
+
+          <script type="text/javascript">
+            var len=<%=j.attr_str.length%>;
+
+            function inputdata(){
+              var attr=[];
+              for(var i=0;i<len;i++)
+                attr.push($('#attr'+i).val());
+
+              var tb=`experiment_<%=j.table_name%>`;
+
+              $.post('/db/experiment/item/insert',{
+                tb:tb,
+                attr:attr,
+              },(d,e)=>{
+                if(d==='success')
+                {
+                  jbalert('데이터 추가','데이터 추가가 완료되었습니다.');
+                  setTimeout(()=>{
+                    location.replace('/experiment/<%=id%>');
+                  },1000);
+                  
+
+                }else{
+                  jbalert('데이터 추가 실패','데이터 추가가 실패했습니다.');
+
+                }
+              });
+
+            } 
+
+            function genquery(){
+              var query=``;
+              //insert into table_name values(null,'','','',....);
+              query=`insert into experiment_<%=j.table_name%> values(null`;
+              for(var i=0;i<len;i++)
+              {
+                query=query+','+$('#attr'+i).val();
+              }
+              query=query+`)`;
+              return query;
+            }
+
+          </script>
+            
+
+          
+
+      <% include footer.html %>

@@ -1,222 +1,59 @@
       <% include header.html %>
 
-      <% include create_table_modal.html %>
-        <div class="row">
+        <div class="row mb-5">
           <div class="col-12 mb-3">
-            <button class="btn btn-danger" style="float:right;">실험삭제</button>  
-            <button class="btn btn-success" style="float:right;"   data-toggle="modal" data-target="#exampleModal">실험추가</button>  
+            <!--<button class="btn btn-danger" style="float:right;">실험삭제</button>  //-->
+            <button class="btn btn-info" style="float:right;" onclick="javascript:location.href='/experiment/insert';">실험정보 추가</button>  
           </div>
-          <div class="col-lg-3 col-md-6" onclick="javascript:location.href='table';">
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
-                    </div>
-                  </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
 
 
-          <div class="col-lg-3 col-md-6">
+          <% for(var i=0;i<rows.length;i++){ %>
 
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
+           <% if(i%4==0){ %>
+              <div class="row">
+            <% } %>
+              <!--<div class="col-lg-3 col-md-6" onclick="javascript:location.href='table';">//-->
+              <div class="col-lg-3 col-md-6" >
+            
+                <div class="card card-stats" >
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-5">
+                        <div class="card-header card-header-avatar">
+                          <a href="javascript:void(0);">
+                            <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
+                          </a>
+                        </div>
+                      </div>
+                      <div class="col-7">
+                        <div class="numbers">
+                          <p class="card-category"><%=JSON.parse(decodeURIComponent(rows[i].experiment_attribute)).table_name%></p>
+                          <h3 class="card-title"><%=rows[i].experiment_name%></h3>
+                        </div>
+                        <button class="btn btn-info" style="float:right;" onclick="javascript:location.href='/experiment/update/<%=rows[i].id%>';">실험정보수정</button>
+                        <button class="btn btn-success" style="float:right;" onclick="javascript:location.href='/experiment/<%=rows[i].id%>';"><i class="fas fa-database"></i>데이터 보기</button>
+                      </div>
                     </div>
                   </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
+                  <div class="card-footer">
+                    <hr>
+                    <div class="stats">
+                      <i class="tim-icons icon-simple-add"></i>
+                       0 rows
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
-                    </div>
-                  </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
-                    </div>
-                  </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
-                    </div>
-                  </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
-                    </div>
-                  </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6">
-
-            <div class="card card-stats">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5">
-                    <div class="card-header card-header-avatar">
-                      <a href="javascript:void(0);">
-                        <img class="img img-raised" src="assets/img/tomato.jpg" alt="Card image">
-                      </a>
-                    </div>
-                  </div>
-                  <div class="col-7">
-                    <div class="numbers">
-                      <p class="card-category">tomato1-table</p>
-                      <h3 class="card-title">토마토실험</h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-footer">
-                <hr>
-                <div class="stats">
-                  <i class="tim-icons icon-simple-add"></i>
-                   1 rows
-                </div>
-              </div>
-            </div>
-          </div>
 
 
+              </div>
+            
+            <% if((i+1)%4==0){ %>
+              </div>
+            <% } %>
+
+          <% } %>
+          
           
 
       <% include footer.html %>
