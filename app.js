@@ -12,8 +12,8 @@ let storage=multer.diskStorage({
 	},
 	filename: function(req,file,callback){
 		let extension = path.extname(file.originalname);
-		let basename = path.basename(file.originalname,extension);
-		callback(null,basename+"-"+Date.now()+extension);
+		//let basename = path.basename(file.originalname,extension);
+		callback(null,Date.now()+extension);
 	}
 });
 var upload = multer({storage:storage});
