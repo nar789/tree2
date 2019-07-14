@@ -87,11 +87,15 @@
                       
                     }else{
                       jbalert('데이터 삭제 실패','데이터 삭제가 실패했습니다.');
+
+                      setTimeout(()=>{  
+                        location.href=`/experiment/<%=id%>`;
+                      },1000);
                     }
                   });
 
 
-              });
+              },()=>{alert('hi');});
               
 
 

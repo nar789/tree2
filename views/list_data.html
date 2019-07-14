@@ -19,7 +19,7 @@
                         <th><%=j.attr_str[i]%></th>
                       <% } %>
                       <th>데이터수정</th>
-                      <th>이미지 데이터</th>
+                      <th>첨부파일목록</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -30,7 +30,7 @@
                           <td><%=rows[i][''+j.attr_str[k]]%></td>
                         <% } %>
                         <td><button class="btn btn-success" onclick="javascript:location.href=`/experiment/<%=id%>/item/<%=rows[i].id%>/update`;">데이터수정</button></td>
-                        <td><button class="btn btn-info">자세히보기</button></td>
+                        <td><button class="btn btn-info" onclick="javascript:location.href=`/upload/<%=id%>/<%=rows[i].id%>`">자세히보기</button></td>
                         
                       </tr>
                     <% } %>

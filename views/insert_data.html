@@ -19,7 +19,19 @@
                         <input type="text" class="form-control" id=attr<%=i%> placeholder="값을 입력해주세요.">
                       </div>
                     <% } %>
+
+
               </form>
+              <br>
+                    <button class="btn btn-info mb-3">첨부파일목록</button> <br>
+                    <form action='/experiment/data/upload' method='post' enctype="multipart/form-data" id=upload-form>
+                        <input type=file name=datafile1 class="form-control mb-3" multiple>
+                        <input type=file name=datafile2 class="form-control mb-3" multiple>
+                        <input type=file name=datafile3 class="form-control mb-3" multiple>
+                        
+                        <input type=hidden name=expid value="<%=id%>">
+                        <input type=hidden name=itemid id=itemid>
+                    </form>
               <button class="btn btn-block btn-success mt-5" onclick="inputdata()">데이터입력</button>
             </div>
 
@@ -40,11 +52,13 @@
                 tb:tb,
                 attr:attr,
               },(d,e)=>{
-                if(d==='success')
+                if(d.msg==='success')
                 {
+                  $('#itemid').val(d.insertId);
                   jbalert('데이터 추가','데이터 추가가 완료되었습니다.');
                   setTimeout(()=>{
-                    location.replace('/experiment/<%=id%>');
+                    //location.replace('/experiment/<%=id%>');
+                    $('#upload-form').submit();
                   },1000);
                   
 

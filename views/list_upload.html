@@ -1,0 +1,166 @@
+<% include header.html %>
+        <div class="row mt-5">
+
+          <div class="col-12 mb-3">
+          <a href='#' onclick="javascript:history.back();">
+          <h2 style="display:inline-block;"><i class="fas fa-chevron-left"></i> 첨부파일</h2></a>
+            <form action='/experiment/data/upload' method='post' enctype="multipart/form-data" id=upload-form>
+              <input type=hidden name=expid value="<%=exp_id%>">
+              <input type=hidden name=itemid value="<%=item_id%>">
+              <input type=file name=datafile1 id=datafile1 class="form-control mb-3" multiple >
+            </form>
+            <button class="btn btn-success" style="float:right;"  onclick="javascript:fileupload();">첨부파일추가</button>  
+            <br>
+          </div>
+        </div>
+
+
+         <table id="datatable" class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>파일이름</th>
+                      <th>다운로드</th>
+                      <th>삭제</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for(var i=0;i<rows.length;i++){ %>
+                      <tr>
+                        <td><%=(i+1)%></td>
+                        <td><%=rows[i].filename%></td>
+                        <td><a href='/assets/uploads/<%=rows[i].filename%>' download><button class="btn btn-success">다운로드</button></a></td>
+                        <td><button class="btn btn-danger" onclick="javascript:del_data(<%=rows[i].id%>);">삭제</button></td>
+                        
+                      </tr>
+                    <% } %>
+                    
+                  </tbody>
+               
+                </table>
+
+
+      </div>
+
+
+
+
+  
+  <!--   Core JS Files   -->
+  <script src="/assets/js/core/jquery.min.js"></script>
+  <script src="/assets/js/core/popper.min.js"></script>
+  <script src="/assets/js/core/bootstrap.min.js"></script>
+  <script src="/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <script src="/assets/js/plugins/moment.min.js"></script>
+  <!--  Plugin for Switches, full documentation here: http://www.jque.re/plugins/version3/bootstrap.switch/ -->
+  <script src="/assets/js/plugins/bootstrap-switch.js"></script>
+  <!--  Plugin for Sweet Alert -->
+  <script src="/assets/js/plugins/sweetalert2.min.js"></script>
+  <!--  Plugin for Sorting Tables -->
+  <script src="/assets/js/plugins/jquery.tablesorter.js"></script>
+  <!-- Forms Validations Plugin -->
+  <script src="/assets/js/plugins/jquery.validate.min.js"></script>
+  <!--  Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+  <script src="/assets/js/plugins/jquery.bootstrap-wizard.js"></script>
+  <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+  <script src="/assets/js/plugins/bootstrap-selectpicker.js"></script>
+  <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+  <script src="/assets/js/plugins/bootstrap-datetimepicker.js"></script>
+  <!--  DataTables.net Plugin, full documentation here: https://datatables.net/    -->
+  <script src="/assets/js/plugins/jquery.dataTables.min.js"></script>
+  <!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+  <script src="/assets/js/plugins/bootstrap-tagsinput.js"></script>
+  <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+  <script src="/assets/js/plugins/jasny-bootstrap.min.js"></script>
+  <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+  <script src="/assets/js/plugins/fullcalendar.min.js"></script>
+  <!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
+  <script src="/assets/js/plugins/jquery-jvectormap.js"></script>
+  <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+  <script src="/assets/js/plugins/nouislider.min.js"></script>
+  <!--  Google Maps Plugin    -->
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+  <!-- Chart JS -->
+  <script src="/assets/js/plugins/chartjs.min.js"></script>
+  <!--  Notifications Plugin    -->
+  <script src="/assets/js/plugins/bootstrap-notify.js"></script>
+  <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="/assets/js/black-dashboard.min.js?v=1.0.0"></script>
+  <!-- Black Dashboard DEMO methods, don't include it in your project! -->
+  <script src="/assets/demo/demo.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      $('#datatable').DataTable({
+        "pagingType": "full_numbers",
+        "lengthMenu": [
+          [10, 25, 50, -1],
+          [10, 25, 50, "All"]
+        ],
+        responsive: true,
+        language: {
+          search: "_INPUT_",
+          searchPlaceholder: "Search records",
+        }
+
+      });
+
+      var table = $('#datatable').DataTable();
+
+      // Edit record
+      table.on('click', '.edit', function() {
+        $tr = $(this).closest('tr');
+
+        var data = table.row($tr).data();
+        alert('You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.');
+      });
+
+      // Delete a record
+      table.on('click', '.remove', function(e) {
+        $tr = $(this).closest('tr');
+        table.row($tr).remove().draw();
+        e.preventDefault();
+      });
+
+      //Like record
+      table.on('click', '.like', function() {
+        alert('You clicked on Like button');
+      });
+    });
+  </script>
+
+  <script type="text/javascript">
+    
+    function fileupload(){
+      if($('#datafile1').val()=='')return;
+      $('#upload-form').submit();
+    }
+
+
+    function del_data(id){
+
+        confirm('데이터삭제','데이터를 삭제하시겠습니까?',()=>{
+
+          $.post('/db/upload/delete',{
+              id:id,
+            },(d,e)=>{
+              if(d==='success'){
+                jbalert('데이터 삭제 성공','데이터 삭제가 완료되었습니다.');
+                
+                setTimeout(()=>{  
+                  location.href=`/upload/<%=exp_id%>/<%=item_id%>`;
+                },1000);
+                
+              }else{
+                jbalert('데이터 삭제 실패','데이터 삭제가 실패했습니다.');
+              }
+            });
+        });
+
+      }
+
+  </script>
+
+
+<% include footer.html %>

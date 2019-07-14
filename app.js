@@ -3,6 +3,21 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var config = require('./config.my');
 
+var multer = require('multer');
+var path = require('path');
+
+let storage=multer.diskStorage({
+	destination: function(req,file,callback){
+		callback(null,"views/assets/uploads/");
+	},
+	filename: function(req,file,callback){
+		let extension = path.extname(file.originalname);
+		let basename = path.basename(file.originalname,extension);
+		callback(null,basename+"-"+Date.now()+extension);
+	}
+});
+var upload = multer({storage:storage});
+
 var app = express();
 var log=console.log;
 
@@ -24,6 +39,23 @@ app.get('/', function (req, res) {
 
   },()=>{res.send('fail');})
   
+});
+
+app.post('/db/upload/delete',function(req,res){
+	var id=req.body.id;
+	var qry=`delete from upload where id=${id}`;
+	httpreq(qry,(rows)=>{
+		res.send('success');
+	},()=>{res.send('fail');});
+});
+
+app.get('/upload/:exp_id/:item_id',function(req,res){
+	var exp_id=req.params.exp_id;
+	var item_id=req.params.item_id;
+	var qry=`select * from upload where exp_id=${exp_id} and item_id=${item_id}`;
+	httpreq(qry,(rows)=>{
+		res.render('list_upload.html',{rows:rows,exp_id:exp_id,item_id:item_id});		
+	},()=>{res.send('fail');});
 });
 
 app.get('/experiment/insert', function (req, res) {
@@ -99,6 +131,43 @@ app.get('/experiment/:id',function(req,res){
 	
 });
 
+app.post('/experiment/data/upload',upload.fields([{name:'datafile1',maxCount:100},{name:'datafile2',maxCount:100},{name:'datafile3',maxCount:100}]),function(req,res){
+	var itemid=req.body.itemid;
+	var expid=req.body.expid;
+	console.log(req.files);
+	var fs=[];
+	if(req.files.datafile1!=undefined){
+		for(var i=0;i<req.files.datafile1.length;i++)
+		{
+			fs.push(req.files.datafile1[i].filename);
+		}
+	}
+	if(req.files.datafile2!=undefined){
+		for(var i=0;i<req.files.datafile2.length;i++)
+		{
+			fs.push(req.files.datafile2[i].filename);
+		}
+	}
+	if(req.files.datafile3!=undefined){
+		for(var i=0;i<req.files.datafile3.length;i++)
+		{
+			fs.push(req.files.datafile3[i].filename);
+		}
+	}
+	if(fs.length==0)return;
+	console.log(fs);
+	var qry=`insert into upload values`;
+	var v=``;
+	for(var i=0;i<fs.length;i++){
+		v=v+`(null,${expid},${itemid},'${fs[i]}')`;
+		if(i!=fs.length-1)v=v+',';
+	}
+	qry=qry+v;
+	httpreq(qry,()=>{
+		res.send(`<script>location.replace('/experiment/${expid}');</script>`);
+	},()=>{res.send('fail');});
+});
+
 app.get('/experiment/:id/item/insert',function(req,res)
 {
 	var id=req.params.id;
@@ -146,10 +215,11 @@ app.post('/db/experiment/item/insert',function(req,res){
 	var tb=req.body.tb;
 	var attr=req.body.attr;
 	var query=item_insert_query_generator(tb,attr);
-	httpreq(query,()=>{
-		res.send('success');
+	httpreq(query,(ret)=>{
+
+		res.send({msg:'success',insertId:ret.insertId});
 	},()=>{
-		res.send('fail');
+		res.send({msg:'fail'});
 	});
 });
 
