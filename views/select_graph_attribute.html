@@ -44,7 +44,6 @@
                   </div>
                   <div class="card-body">
                     <div class="chart-area">
-                      <canvas id="chartSimpleWithGradient"></canvas>
                     </div>
                   </div>
                 </div>
@@ -152,6 +151,11 @@
             function genChart()
             {
               $('#attr_title').html(atts);
+
+              var cvs=`<canvas id="chartSimpleWithGradient"></canvas>`;
+              $('#chartSimpleWithGradient').remove();
+              $('.chart-area').html('');
+              $('.chart-area').append(cvs);
               var ctx = document.getElementById("chartSimpleWithGradient").getContext("2d");
 
               var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
