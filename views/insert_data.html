@@ -25,9 +25,9 @@
               <br>
                     <button class="btn btn-info mb-3">첨부파일목록</button> <br>
                     <form action='/experiment/data/upload' method='post' enctype="multipart/form-data" id=upload-form>
-                        <input type=file name=datafile1 class="form-control mb-3" multiple>
-                        <input type=file name=datafile2 class="form-control mb-3" multiple>
-                        <input type=file name=datafile3 class="form-control mb-3" multiple>
+                        <input type=file name=datafile1 class="form-control mb-3" multiple id=file1>
+                        <input type=file name=datafile2 class="form-control mb-3" multiple id=file2>
+                        <input type=file name=datafile3 class="form-control mb-3" multiple id=file3>
                         
                         <input type=hidden name=expid value="<%=id%>">
                         <input type=hidden name=itemid id=itemid>
@@ -58,7 +58,10 @@
                   jbalert('데이터 추가','데이터 추가가 완료되었습니다.');
                   setTimeout(()=>{
                     //location.replace('/experiment/<%=id%>');
-                    $('#upload-form').submit();
+                    if($('#file1').val()=='' && $('#file2').val()=='' && $('#file3').val()=='')
+                      location.replace('/experiment/<%=id%>');
+                    else
+                      $('#upload-form').submit();
                   },1000);
                   
 

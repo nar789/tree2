@@ -88,6 +88,8 @@ app.post('/db/experiment/item/update',function(req,res){
 });
 
 
+
+
 app.post('/db/experiment/item/delete',function(req,res){
 	var tb=req.body.tb;
 	var id=req.body.id;
@@ -96,6 +98,34 @@ app.post('/db/experiment/item/delete',function(req,res){
 	var query=`delete from experiment_${tb} where id=${id}`;
 	httpreq(query,()=>{
 		res.send('success');
+	},()=>{res.send('fail');});
+});
+
+
+//select graph id 
+
+app.get('/experiment/graph/:id', function (req, res) {
+	var id=req.params.id;
+	var query=`select * from experiment where id=${id}`;
+	httpreq(query,(rows)=>{
+
+		res.render('select_graph_attribute.html',{rows:rows});
+
+	},()=>{
+		res.send('fail');
+	})
+  
+});
+
+app.get('/experiment/graphqry',function(req,res){
+	
+	var tbl=req.query.tbl;
+	var attr=req.query.attr;
+	console.log(tbl+' '+attr);
+	var qry=`select id,${attr} from experiment_${tbl}`; 
+	
+	httpreq(qry,(rows)=>{
+		res.json(rows);
 	},()=>{res.send('fail');});
 });
 
@@ -325,5 +355,5 @@ function httpreq(query,passcallback,failcallback){
 
 
 app.listen(52080, function () {
-  console.log('smartfarm v2.1.0');
+  console.log('smartfarm v2.2.0');
 });

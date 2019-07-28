@@ -1,0 +1,250 @@
+      <% include header.html %>
+
+        
+          <div class="row mt-3">
+            <div class="col-12 mb-3">
+              <a href='/'><h1><i class="fas fa-chevron-left"></i> 실험정보 그래프 속성 선택</h1></a>
+              <h4 style="color:#898989;">그래프에 보여질 실험정보를 선택합니다.</h4>
+            </div>
+          </div>
+          <div class="row justify-content-center d-flex">
+            <div class="col-8 ">
+              <form action="#">
+                      <label>실험이름</label>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id=exp_name value="<%=rows[0].experiment_name%>">
+                      </div>
+                      <label>실험식물</label>
+                      <div class="form-group">
+                        <select class="form-control" id=plant>
+                            <option value="1">토마토</option>
+                            <option value="2">감자</option>
+                            <option value="3">딸기</option>
+                        </select>
+                      </div>
+
+                      <label>테이블 이름(영문으로 기입해주세요.)</label>
+                      <div class="form-group">
+                        <input type="text" class="form-control" id=table_name disabled="disabled">
+                      </div>
+                      <div id=attrdiv>
+                        
+                      </div>
+
+              </form>
+              <button class="btn btn-block btn-success mt-5" onclick="update_exp()"><i class="fas fa-signal"></i> 그래프보기</button>
+            </div>
+          </div>
+          <div class="row justify-content-center d-flex mt-5">
+            <div class="col-8">
+              <div class="card card-chart">
+                  <div class="card-header">
+                    <h5 class="card-category">데이터 속성 그래프로 보기</h5>
+                    <h3 class="card-title"><i class="tim-icons icon-chart-bar-32 text-primary "></i><p id=attr_title style="display: inline-block;"></p></h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-area">
+                      <canvas id="chartSimpleWithGradient"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+
+          <script type="text/javascript">
+
+            var attr=[];
+            last_id=0;
+
+            function init(pid,attribute)
+            {
+              $('#plant').val(pid);
+              attribute=decodeURIComponent(attribute);
+
+              var j=JSON.parse(attribute);
+
+
+              $('#table_name').val(j.table_name);
+
+
+              for(var i=0;i<j.attr_str.length;i++)
+              {
+                add_attr_str(j.attr_str[i]);
+              }
+
+            }
+            window.onload=init(<%=rows[0].plant_id%>,`<%=rows[0].experiment_attribute%>`);
+
+
+
+          
+          
+
+            function add_attr_str(str){
+              
+              last_id++;
+              attr.push({
+                id:last_id,
+                str:str,
+              });
+              var script=`
+                  <div id=attr_group${last_id}>
+                    <label>속성명${last_id}(영문으로 기입해주세요.)</label> <a href="javascript:;"><button onclick="attr_sel('${str}')" class="selbtn btn btn-info btn-sm" id='${str}_sel_btn'>속성선택</button></a>
+                    <div class="form-group">
+                      <input type="text" class="form-control " id="attr_str${last_id}" value="${str}">
+                    </div>
+                  </div>`;
+              $('#attrdiv').append(script);
+
+            }
+
+
+            //var atts=[];
+            var atts='';
+            function attr_sel(attr){
+              if($('#'+attr+'_sel_btn').html()=='속성선택'){
+                $('.selbtn').attr('class','selbtn btn btn-info btn-sm');
+                $('.selbtn').html('속성선택');
+                $('#'+attr+'_sel_btn').attr('class','selbtn btn btn-primary btn-sm');
+                $('#'+attr+'_sel_btn').html('선택해제');
+                atts=attr;
+              }else{
+                $('#'+attr+'_sel_btn').attr('class','selbtn btn btn-info btn-sm');
+                $('#'+attr+'_sel_btn').html('속성선택');
+                atts='';
+              }
+               
+            }
+
+            var labels=[];
+            var vals=[];
+            function update_exp(){
+              if(atts==''){
+                jbalert('데이터 속성을 선택해주세요.');
+              }
+              labels=[];
+              vals=[];
+              var tbl=$('#table_name').val();
+              var qry=`/experiment/graphqry?tbl=${tbl}&attr=${atts}`;
+              $.get(qry,(d,e)=>{
+                if(d==='fail')return; 
+                for(var i=0;i<d.length;i++)
+                {
+                  label=atts+d[i]['id'];
+                  labels.push(label);
+                  aval=parseInt(d[i][atts]);
+                  if(isNaN(aval)){
+                    jbalert('숫자가 아닌 값이 있습니다. 그래프를 형성할 수 없습니다.');
+                    break;
+                  }
+                  
+                  vals.push(aval);
+                }
+                genChart();  
+              });
+
+              
+            }
+
+
+
+            function genChart()
+            {
+              $('#attr_title').html(atts);
+              var ctx = document.getElementById("chartSimpleWithGradient").getContext("2d");
+
+              var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+
+              gradientStroke.addColorStop(1, 'rgba(72,72,176,0.4)');
+              gradientStroke.addColorStop(0.8, 'rgba(72,72,176,0.2)');
+              gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
+
+
+
+              gradientChartOptionsConfigurationPurple = {
+                  maintainAspectRatio: false,
+                  legend: {
+                    display: false
+                  },
+
+                  tooltips: {
+                    backgroundColor: '#f5f5f5',
+                    titleFontColor: '#333',
+                    bodyFontColor: '#666',
+                    bodySpacing: 4,
+                    xPadding: 12,
+                    mode: "nearest",
+                    intersect: 0,
+                    position: "nearest"
+                  },
+                  responsive: true,
+                  scales: {
+                    yAxes: [{
+                      barPercentage: 1.6,
+                      gridLines: {
+                        drawBorder: false,
+                        color: 'rgba(186,84,245,0.1)',
+                        zeroLineColor: "transparent",
+                      },
+                      ticks: {
+                        suggestedMin: 60,
+                        suggestedMax: 125,
+                        padding: 20,
+                        fontColor: "#9e9e9e"
+                      }
+                    }],
+
+                    xAxes: [{
+                      barPercentage: 1.6,
+                      gridLines: {
+                        drawBorder: false,
+                        color: 'rgba(186,84,245,0.1)',
+                        zeroLineColor: "transparent",
+                      },
+                      ticks: {
+                        padding: 20,
+                        fontColor: "#9e9e9e"
+                      }
+                    }]
+                  }
+                };
+
+
+
+              var myChart = new Chart(ctx, {
+                type: 'line',
+                responsive: true,
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    label: "Data",
+                    fill: true,
+                    backgroundColor: gradientStroke,
+                    borderColor: '#ba54f5',
+                    borderWidth: 2,
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    pointBackgroundColor: '#be55ed',
+                    pointBorderColor: 'rgba(255,255,255,0)',
+                    pointHoverBackgroundColor: '#be55ed',
+                    //pointHoverBorderColor:'rgba(35,46,55,1)',
+                    pointBorderWidth: 20,
+                    pointHoverRadius: 4,
+                    pointHoverBorderWidth: 15,
+                    pointRadius: 4,
+                    data: vals,
+                  }]
+                },
+                options: gradientChartOptionsConfigurationPurple
+              });
+            }
+
+              
+           
+          </script>
+            
+
+          
+
+      <% include footer.html %>
